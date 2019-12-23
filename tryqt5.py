@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import sys
+from argparse import ArgumentParser
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
@@ -8,6 +10,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QGridLayout,
+    QInputDialog,
     QLabel,
     QLineEdit,
 )
@@ -63,8 +66,40 @@ class UsernamePassword(QWidget):
             self.close()
 
 
-if __name__ == '__main__':
+def username_password_example(opts):
     app = QApplication([])
     w = UsernamePassword()
     w.show()
     sys.exit(app.exec_())
+
+
+def pin_example(opts):
+    app = QApplication([])
+    text, ok = QInputDialog.getText(None, 'Chungus', 'Enter PIN:')
+    if ok:
+        print('PIN is "{}"'.format(text))
+    else:
+        print('PIN was not entered')
+
+
+def create_parser(prog_name):
+    parser = ArgumentParser(prog=prog_name, description='Run Qt5 examples', epilog='You are a chungus')
+    sp = parser.add_subparsers(help='commands')
+    passwd = sp.add_parser('password', help='username/password dialog')
+    passwd.set_defaults(func=username_password_example)
+    pin = sp.add_parser('pin', help='collect user pin')
+    pin.set_defaults(func=pin_example)
+    return parser
+
+
+def main():
+    parser = create_parser(sys.argv[0])
+    opts = parser.parse_args(sys.argv[1:])
+    if not hasattr(opts, 'func'):
+        parser.print_help()
+        sys.exit(1)
+    opts.func(opts)
+
+
+if __name__ == '__main__':
+    main()
