@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 )
 
 
-class UsernamePassword(QWidget):
+class UsernamePasswordDialog(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -52,7 +52,6 @@ class UsernamePassword(QWidget):
         vbox.addLayout(grid)
         vbox.addStretch(1)
         vbox.addLayout(hbox)
-        
         self.setLayout(vbox)
 
     def buttonClicked(self):
@@ -60,27 +59,69 @@ class UsernamePassword(QWidget):
         print('"{}" button was pressed'.format(button_text))
         self.close()
 
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Escape:
+            print('"Escape" key was pressed')
+            self.close()
+
+
+class PinDialog(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.init_guts()
+
+    def init_guts(self):
+        self.resize(400, 150)
+        self.move(300, 300)
+        self.setWindowTitle('Chungus')
+
+        okButton = QPushButton("OK")
+        cancelButton = QPushButton("Cancel")
+        okButton.clicked.connect(self.buttonClicked)
+        cancelButton.clicked.connect(self.buttonClicked)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+
+        pinLabel = QLabel('PIN')
+        pinText = QLineEdit()
+
+        grid = QGridLayout()
+        grid.addWidget(pinLabel, 1, 0)
+        grid.addWidget(pinText, 1, 1)
+
+        vbox = QVBoxLayout()
+        vbox.addLayout(grid)
+        vbox.addStretch(1)
+        vbox.addLayout(hbox)
+        self.setLayout(vbox)
+
+    def buttonClicked(self):
+        button_text = self.sender().text()
+        print('"{}" button was pressed'.format(button_text))
+        self.close()
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape:
+            print('"Escape" key was pressed')
             self.close()
 
 
 def username_password_example(opts):
     app = QApplication([])
-    w = UsernamePassword()
+    w = UsernamePasswordDialog()
     w.show()
     sys.exit(app.exec_())
 
 
 def pin_example(opts):
     app = QApplication([])
-    text, ok = QInputDialog.getText(None, 'Chungus', 'Enter PIN:')
-    if ok:
-        print('PIN is "{}"'.format(text))
-    else:
-        print('PIN was not entered')
-
+    w = PinDialog()
+    w.show()
+    sys.exit(app.exec_())
 
 def create_parser(prog_name):
     parser = ArgumentParser(prog=prog_name, description='Run Qt5 examples', epilog='You are a chungus')
